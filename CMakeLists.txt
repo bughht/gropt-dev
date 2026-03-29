@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.17)
 project(gropt_python LANGUAGES CXX)
+if(MSVC)
+  add_compile_options(/utf-8)
+endif()
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
@@ -13,35 +16,38 @@ find_package(nanobind CONFIG REQUIRED)
 # C++ source files (same as gropt/src/CMakeLists.txt minus main.cpp and fft_helper.cpp)
 set(GROPT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gropt/src")
 set(GROPT_SOURCES
-    ${GROPT_SRC_DIR}/equilibrate.cpp
-    ${GROPT_SRC_DIR}/gropt_params.cpp
-    ${GROPT_SRC_DIR}/gropt_utils.cpp
-    ${GROPT_SRC_DIR}/ils.cpp
-    ${GROPT_SRC_DIR}/ils_cg.cpp
-    ${GROPT_SRC_DIR}/ils_nlcg.cpp
-    ${GROPT_SRC_DIR}/ils_bicgstabl.cpp
-    ${GROPT_SRC_DIR}/op_main.cpp
-    ${GROPT_SRC_DIR}/op_bvalue.cpp
-    ${GROPT_SRC_DIR}/op_concomitant.cpp
-    ${GROPT_SRC_DIR}/op_gradient.cpp
-    ${GROPT_SRC_DIR}/op_identity.cpp
-    ${GROPT_SRC_DIR}/op_moment.cpp
-    ${GROPT_SRC_DIR}/op_slew.cpp
-    ${GROPT_SRC_DIR}/op_safe.cpp
-    ${GROPT_SRC_DIR}/op_eddy.cpp
-    ${GROPT_SRC_DIR}/op_tv.cpp
-    ${GROPT_SRC_DIR}/solver.cpp
-    ${GROPT_SRC_DIR}/solver_groptsdmm.cpp
-    ${GROPT_SRC_DIR}/solver_osqp.cpp
-    ${GROPT_SRC_DIR}/workspace_osqp.cpp
-    ${GROPT_SRC_DIR}/workspace_sdmm.cpp
-    ${GROPT_SRC_DIR}/workspace_solver.cpp
+    ${GROPT_SRC_DIR}/solvers/equilibrate.cpp
+    ${GROPT_SRC_DIR}/core/gropt_params.cpp
+    ${GROPT_SRC_DIR}/core/gropt_utils.cpp
+    ${GROPT_SRC_DIR}/solvers/ils.cpp
+    ${GROPT_SRC_DIR}/solvers/ils_cg.cpp
+    ${GROPT_SRC_DIR}/solvers/ils_nlcg.cpp
+    ${GROPT_SRC_DIR}/solvers/ils_bicgstabl.cpp
+    ${GROPT_SRC_DIR}/operators/op_main.cpp
+    ${GROPT_SRC_DIR}/operators/op_bvalue.cpp
+    ${GROPT_SRC_DIR}/operators/op_concomitant.cpp
+    ${GROPT_SRC_DIR}/operators/op_gradient.cpp
+    ${GROPT_SRC_DIR}/operators/op_identity.cpp
+    ${GROPT_SRC_DIR}/operators/op_moment.cpp
+    ${GROPT_SRC_DIR}/operators/op_slew.cpp
+    ${GROPT_SRC_DIR}/operators/op_safe.cpp
+    ${GROPT_SRC_DIR}/operators/op_eddy.cpp
+    ${GROPT_SRC_DIR}/operators/op_tv.cpp
+    ${GROPT_SRC_DIR}/solvers/solver.cpp
+    ${GROPT_SRC_DIR}/solvers/solver_groptsdmm.cpp
+    ${GROPT_SRC_DIR}/solvers/solver_osqp.cpp
+    ${GROPT_SRC_DIR}/solvers/workspace_osqp.cpp
+    ${GROPT_SRC_DIR}/solvers/workspace_sdmm.cpp
+    ${GROPT_SRC_DIR}/solvers/workspace_solver.cpp
 )
 
 add_library(gropt_core STATIC ${GROPT_SOURCES})
 set_target_properties(gropt_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(gropt_core PUBLIC
     ${GROPT_SRC_DIR}
+    ${GROPT_SRC_DIR}/core
+    ${GROPT_SRC_DIR}/operators
+    ${GROPT_SRC_DIR}/solvers
     ${GROPT_SRC_DIR}/external
 )
 target_compile_definitions(gropt_core PUBLIC FMT_UNICODE=0)
