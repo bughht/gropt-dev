@@ -44,6 +44,7 @@ class Op_BValue : public Operator
     public:
         Op_BValue(const ProblemData &_pdata, double _bval_target, double _bval_tol0,
                   int _start_idx0, int _stop_idx0, double _weight_mod, BVALUE_MODE _mode, double _max_scale);
+        virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
         virtual void init();
 
         virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);

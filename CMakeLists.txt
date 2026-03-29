@@ -17,6 +17,7 @@ find_package(nanobind CONFIG REQUIRED)
 set(GROPT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gropt/src")
 set(GROPT_SOURCES
     ${GROPT_SRC_DIR}/solvers/equilibrate.cpp
+    ${GROPT_SRC_DIR}/core/fft_helper.cpp
     ${GROPT_SRC_DIR}/core/gropt_params.cpp
     ${GROPT_SRC_DIR}/core/gropt_utils.cpp
     ${GROPT_SRC_DIR}/solvers/ils.cpp
@@ -29,6 +30,7 @@ set(GROPT_SOURCES
     ${GROPT_SRC_DIR}/operators/op_gradient.cpp
     ${GROPT_SRC_DIR}/operators/op_identity.cpp
     ${GROPT_SRC_DIR}/operators/op_moment.cpp
+    ${GROPT_SRC_DIR}/operators/op_acoustic.cpp
     ${GROPT_SRC_DIR}/operators/op_slew.cpp
     ${GROPT_SRC_DIR}/operators/op_safe.cpp
     ${GROPT_SRC_DIR}/operators/op_eddy.cpp

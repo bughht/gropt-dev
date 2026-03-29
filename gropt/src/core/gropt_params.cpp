@@ -16,6 +16,23 @@ namespace Gropt {
 
 GroptParams::GroptParams() {}
 
+std::unique_ptr<GroptParams> GroptParams::clone() const {
+    auto ret = std::make_unique<GroptParams>();
+    ret->pdata = this->pdata;
+    ret->Ntot = this->Ntot;
+    ret->vec_init_status = this->vec_init_status;
+    ret->op_prep_status = this->op_prep_status;
+    ret->ils_method = this->ils_method;
+
+    for (const auto& op : all_op) {
+        ret->all_op.push_back(op->clone(&ret->pdata));
+    }
+    for (const auto& obj : all_obj) {
+        ret->all_obj.push_back(obj->clone(&ret->pdata));
+    }
+    return ret;
+}
+
 void GroptParams::vec_init_simple(int _N, int _Naxis, double first_val, double last_val) {
     if (_N > 0) {
         N = _N;
@@ -323,19 +340,23 @@ void GroptParams::prepare() {
 }
 
 void GroptParams::add_gmax(double gmax, bool rot_variant, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_Gradient>(pdata, gmax, rot_variant, weight_mod));
 }
 
 void GroptParams::add_smax(double smax, bool rot_variant, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_Slew>(pdata, smax, rot_variant, weight_mod));
 }
 
 void GroptParams::add_concomitant(int start_idx, bool rot_variant, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_Concomitant>(pdata, start_idx, rot_variant, weight_mod));
 }
 
 void GroptParams::add_moment(double order, double target, double tol0, std::string units, int moment_axis,
                              int start_idx0, int stop_idx0, int ref_idx0, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_Moment>(pdata, order, target, tol0, units, moment_axis, start_idx0, stop_idx0,
                                                  ref_idx0, weight_mod));
 }
@@ -344,6 +365,7 @@ void GroptParams::add_SAFE(double stim_thresh, int new_first_axis, double weight
     auto op_F = std::make_unique<Op_SAFE>(pdata, stim_thresh, weight_mod);
     op_F->safe_params.set_demo_params();
     op_F->safe_params.swap_first_axes(new_first_axis);
+    op_prep_status = -1;
     all_op.push_back(std::move(op_F));
 }
 
@@ -354,6 +376,7 @@ void GroptParams::add_SAFE(double stim_thresh, const Eigen::VectorXd &tau1, cons
     auto op_F = std::make_unique<Op_SAFE>(pdata, stim_thresh, weight_mod);
     op_F->safe_params.set_params(tau1, tau2, tau3, a1, a2, a3, stim_limit, g_scale);
     op_F->safe_params.swap_first_axes(new_first_axis);
+    op_prep_status = -1;
     all_op.push_back(std::move(op_F));
 }
 
@@ -361,6 +384,7 @@ void GroptParams::add_SAFE_vec(const Eigen::VectorXd &stim_thresh_vec, int new_f
     auto op_F = std::make_unique<Op_SAFE>(pdata, stim_thresh_vec, weight_mod);
     op_F->safe_params.set_demo_params();
     op_F->safe_params.swap_first_axes(new_first_axis);
+    op_prep_status = -1;
     all_op.push_back(std::move(op_F));
 }
 
@@ -371,25 +395,30 @@ void GroptParams::add_SAFE_vec(const Eigen::VectorXd &stim_thresh_vec, const Eig
     auto op_F = std::make_unique<Op_SAFE>(pdata, stim_thresh_vec, weight_mod);
     op_F->safe_params.set_params(tau1, tau2, tau3, a1, a2, a3, stim_limit, g_scale);
     op_F->safe_params.swap_first_axes(new_first_axis);
+    op_prep_status = -1;
     all_op.push_back(std::move(op_F));
 }
 
 void GroptParams::add_bvalue(double target, double tol, int start_idx0, int stop_idx0, double weight_mod, int mode,
                              double max_scale) {
 
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_BValue>(pdata, target, tol, start_idx0, stop_idx0, weight_mod,
                                                  static_cast<BVALUE_MODE>(mode), max_scale));
 }
 
 void GroptParams::add_eddy(const Eigen::VectorXd &lam, double tol, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_Eddy>(pdata, lam, tol, weight_mod));
 }
 
 void GroptParams::add_TV(double tv_lam, double weight_mod) {
+    op_prep_status = -1;
     all_op.push_back(std::make_unique<Op_TV>(pdata, tv_lam, weight_mod));
 }
 
 void GroptParams::add_obj_identity(double weight_mod) {
+    op_prep_status = -1;
     all_obj.push_back(std::make_unique<Op_Identity>(pdata, weight_mod));
 }
 
@@ -449,3 +478,10 @@ Eigen::VectorXd linear_interpolate(const Eigen::VectorXd &in, int out_size) {
 }
 
 } // namespace Gropt
+
+#include "op_acoustic.hpp"
+
+void Gropt::GroptParams::add_acoustic(const std::vector<double> &freqs, const std::vector<double> &bws, double weight_mod) {
+    op_prep_status = -1;
+    all_op.push_back(std::make_unique<Op_Acoustic>(pdata, freqs, bws, weight_mod));
+}

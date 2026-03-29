@@ -1,6 +1,6 @@
 """GrOpt: Gradient Optimization for MRI"""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 import enum
 from typing import Annotated, overload
 
@@ -8,7 +8,7 @@ import numpy
 from numpy.typing import NDArray
 
 
-__build_date__: str = 'Mar 29 2026 16:46:19'
+__build_date__: str = 'Mar 29 2026 18:21:17'
 
 def set_log_level(level: int) -> None:
     """
@@ -21,7 +21,7 @@ def set_log_level(level: int) -> None:
     Parameters
     ----------
     level : int
-        Log level (0–6).
+        Log level (0�?).
     """
 
 def set_log_callback(arg: Callable, /) -> None: ...
@@ -91,6 +91,9 @@ class GroptParams:
     """
 
     def __init__(self) -> None: ...
+
+    def clone(self) -> GroptParams:
+        """Clone GroptParams object"""
 
     @property
     def N(self) -> int:
@@ -370,6 +373,9 @@ class GroptParams:
         max_scale : float, optional
             Scale factor when mode=3.
         """
+
+    def add_acoustic(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0) -> None:
+        """Add acoustic resonance suppression constraints"""
 
     def add_TV(self, tv_lam: float = 0.0, weight_mod: float = 1.0) -> None:
         """

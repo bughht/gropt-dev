@@ -17,6 +17,7 @@ class Op_TV : public Operator
 
     public:
         Op_TV(const ProblemData &_pdata, double _tv_lam, double _weight_mod);
+        virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
         virtual void init();
 
         virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);

@@ -28,7 +28,8 @@ class Op_Eddy : public Operator {
   public:
     Op_Eddy(const ProblemData &_pdata, const Eigen::VectorXd &_lam, double _tol, double _weight_mod);
 
-    virtual void init();
+    virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
+        virtual void init();
 
     virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);
     virtual void transpose(Eigen::VectorXd &X, Eigen::VectorXd &out);

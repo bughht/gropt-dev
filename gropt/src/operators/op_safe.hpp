@@ -59,7 +59,8 @@ class Op_SAFE : public Operator {
 
     Op_SAFE(const ProblemData &_pdata, double _stim_thresh, double _weight_mod);
     Op_SAFE(const ProblemData &_pdata, const Eigen::VectorXd &_stim_thresh_vec, double _weight_mod);
-    virtual void init();
+    virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
+        virtual void init();
 
     virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);
     virtual void transpose(Eigen::VectorXd &X, Eigen::VectorXd &out);

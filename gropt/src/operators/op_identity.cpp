@@ -60,3 +60,14 @@ void Op_Identity::check(Eigen::VectorXd &X)
 }
 
 }  // close "namespace Gropt"
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_Identity::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_Identity>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

@@ -176,3 +176,14 @@ double Op_BValue::get_bvalue(Eigen::VectorXd &X) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_BValue::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_BValue>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

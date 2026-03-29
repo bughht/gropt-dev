@@ -41,6 +41,7 @@ class Op_Moment : public Operator
         Op_Moment(const ProblemData &_pdata, double _order, double _target, double _tol0, std::string _units,
                   int _moment_axis, int _start_idx0, int _stop_idx0, int _ref_idx0, double _weight_mod);
 
+        virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
         virtual void init();
 
         virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);

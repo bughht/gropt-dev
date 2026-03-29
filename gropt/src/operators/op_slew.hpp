@@ -23,6 +23,7 @@ class Op_Slew : public Operator
 
     public:
         Op_Slew(const ProblemData &_pdata, double _smax, bool _rot_variant, double _weight_mod);
+        virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
         virtual void init();
 
         virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);

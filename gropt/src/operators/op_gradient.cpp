@@ -126,3 +126,14 @@ void Op_Gradient::check(Eigen::VectorXd &X) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_Gradient::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_Gradient>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

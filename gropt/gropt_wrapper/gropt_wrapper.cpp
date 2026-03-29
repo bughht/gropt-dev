@@ -34,7 +34,7 @@ Level mapping: 0=Trace, 1=Debug, 2=Info, 3=Warning, 4=Error, 5=Critical, 6=Off.
 Parameters
 ----------
 level : int
-    Log level (0–6).)doc");
+    Log level (0�?).)doc");
 
     m.def("set_log_callback", [](nb::callable cb) {
         auto sink = std::make_shared<spdlog::sinks::callback_sink_mt>(
@@ -92,6 +92,7 @@ This class holds the waveform dimensions, constraints, and objectives
 that define a gradient optimization problem.)doc"
     )
         .def(nb::init<>())
+        .def("clone", [](const Gropt::GroptParams &self) { return self.clone().release(); }, nb::rv_policy::take_ownership, "Clone GroptParams object")
 
         // Properties: N, Naxis, dt (forwarded to pdata via reference members)
         .def_prop_rw("N",
@@ -191,7 +192,7 @@ int
     Number of pre-encoding time points (N_pre).)doc"
         )
 
-        // setvec_X0 — accepts numpy array, infers N/Naxis from shape
+        // setvec_X0 �?accepts numpy array, infers N/Naxis from shape
         .def("setvec_X0", [](Gropt::GroptParams &self, nb::ndarray<double, nb::ndim<1>> X0, bool set_others) {
             Eigen::Map<const Eigen::VectorXd> x(X0.data(), X0.shape(0));
             self.setvec_X0(Eigen::VectorXd(x), 1, set_others);
@@ -455,6 +456,11 @@ mode : int or str, optional
 max_scale : float, optional
     Scale factor when mode=3.)doc"
         )
+
+        // add_acoustic
+        .def("add_acoustic", &Gropt::GroptParams::add_acoustic,
+             "freqs"_a, "bws"_a, "weight_mod"_a = 1.0,
+             "Add acoustic resonance suppression constraints")
 
         // add_TV
         .def("add_TV", &Gropt::GroptParams::add_TV,

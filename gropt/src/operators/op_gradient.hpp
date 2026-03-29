@@ -24,6 +24,7 @@ class Op_Gradient : public Operator
 
     public:
         Op_Gradient(const ProblemData &_pdata, double _gmax, bool _rot_variant, double _weight_mod);
+        virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const override;
         virtual void init();
 
         virtual void forward(Eigen::VectorXd &X, Eigen::VectorXd &out);

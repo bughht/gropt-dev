@@ -116,3 +116,14 @@ void Op_Concomitant::check(Eigen::VectorXd &X) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_Concomitant::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_Concomitant>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

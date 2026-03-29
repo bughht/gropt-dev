@@ -80,3 +80,14 @@ void Op_TV::check(Eigen::VectorXd &X)
 }
 
 }  // close "namespace Gropt"
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_TV::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_TV>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

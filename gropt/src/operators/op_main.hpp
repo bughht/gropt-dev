@@ -12,6 +12,7 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "problem_data.hpp"
 
@@ -65,6 +66,8 @@ class Operator // This is the main parent class for every operator in GrOpt
     Operator() = default;
     Operator(const ProblemData &_pdata);
     virtual ~Operator();
+
+    virtual std::unique_ptr<Operator> clone(const ProblemData* new_pdata) const = 0;
 
     virtual void init();
 

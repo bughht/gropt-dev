@@ -418,3 +418,14 @@ void SAFEParams::calc_alphas(double dt) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_SAFE::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_SAFE>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

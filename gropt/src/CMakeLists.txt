@@ -33,6 +33,7 @@ set(SRC_FILES
     operators/op_identity.cpp
     operators/op_main.cpp
     operators/op_moment.cpp
+    operators/op_acoustic.cpp
     operators/op_slew.cpp
     operators/op_safe.cpp
     operators/op_eddy.cpp

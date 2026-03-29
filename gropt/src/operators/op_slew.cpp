@@ -148,3 +148,14 @@ void Op_Slew::check(Eigen::VectorXd &X) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_Slew::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_Slew>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

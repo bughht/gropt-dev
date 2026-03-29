@@ -142,3 +142,14 @@ void Op_Moment::check(Eigen::VectorXd &X) {
 }
 
 } // namespace Gropt
+
+
+
+
+namespace Gropt {
+std::unique_ptr<Operator> Op_Moment::clone(const ProblemData* new_pdata) const {
+    auto ret = std::make_unique<Op_Moment>(*this);
+    ret->pdata = new_pdata;
+    return ret;
+}
+}

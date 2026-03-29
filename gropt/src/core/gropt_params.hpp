@@ -32,6 +32,8 @@ struct SolveResult {
 class GroptParams {
 
   public:
+    std::unique_ptr<GroptParams> clone() const;
+
     ProblemData pdata;
 
     // Convenience accessors that forward to pdata
@@ -92,6 +94,7 @@ class GroptParams {
 
     void add_bvalue(double target, double tol, int start_idx0, int stop_idx0, double weight_mod, int mode,
                     double max_scale);
+    void add_acoustic(const std::vector<double> &freqs, const std::vector<double> &bws, double weight_mod);
     void add_TV(double tv_lam, double weight_mod);
 
     void add_obj_identity(double weight_mod);

@@ -23,9 +23,9 @@ SolveResult SolverGroptSDMM::solve(GroptParams &_gparams) {
 
         // Set initial weight based on operator type
         sdmm_ws[i].weight = 1.0;
-        // Slew, moment, bvalue, SAFE, TV operators start with higher weight
+        // Slew, moment, bvalue, SAFE, TV, Acoustic operators start with higher weight
         if (op->name == "Slew" || op->name == "Moment" || op->name == "b-value" || op->name == "SAFE" ||
-            op->name == "TotalVariation") {
+            op->name == "TotalVariation" || op->name == "Acoustic") {
             sdmm_ws[i].weight = 1e4;
         }
         sdmm_ws[i].weight *= op->weight_mod;
