@@ -11,6 +11,8 @@
 #include "op_safe.hpp"
 #include "op_slew.hpp"
 #include "op_tv.hpp"
+#include "op_tv_freq.hpp"
+#include "op_tv2.hpp"
 
 namespace Gropt {
 
@@ -417,6 +419,16 @@ void GroptParams::add_TV(double tv_lam, double weight_mod) {
     all_op.push_back(std::make_unique<Op_TV>(pdata, tv_lam, weight_mod));
 }
 
+void GroptParams::add_TV_Freq(double tv_lam, double weight_mod, int n_pad) {
+    op_prep_status = -1;
+    all_op.push_back(std::make_unique<Op_TV_Freq>(pdata, tv_lam, weight_mod, n_pad));
+}
+
+void GroptParams::add_TV2(double tv2_lam, double weight_mod) {
+    op_prep_status = -1;
+    all_op.push_back(std::make_unique<Op_TV2>(pdata, tv2_lam, weight_mod));
+}
+
 void GroptParams::add_obj_identity(double weight_mod) {
     op_prep_status = -1;
     all_obj.push_back(std::make_unique<Op_Identity>(pdata, weight_mod));
@@ -482,7 +494,7 @@ Eigen::VectorXd linear_interpolate(const Eigen::VectorXd &in, int out_size) {
 #include "op_acoustic.hpp"
 
 void Gropt::GroptParams::add_acoustic(const std::vector<double> &freqs, const std::vector<double> &bws, double weight_mod,
-                                      double transition_hz) {
+                                      double bw_scale) {
     op_prep_status = -1;
-    all_op.push_back(std::make_unique<Op_Acoustic>(pdata, freqs, bws, weight_mod, transition_hz));
+    all_op.push_back(std::make_unique<Op_Acoustic>(pdata, freqs, bws, weight_mod, bw_scale));
 }

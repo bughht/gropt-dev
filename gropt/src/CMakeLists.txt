@@ -38,6 +38,8 @@ set(SRC_FILES
     operators/op_safe.cpp
     operators/op_eddy.cpp
     operators/op_tv.cpp
+    operators/op_tv_freq.cpp
+    operators/op_tv2.cpp
 )
 
 add_executable(gropt main.cpp ${SRC_FILES})

@@ -459,7 +459,7 @@ max_scale : float, optional
 
         // add_acoustic
            .def("add_acoustic", &Gropt::GroptParams::add_acoustic,
-               "freqs"_a, "bws"_a, "weight_mod"_a = 1.0, "transition_hz"_a = 0.0,
+               "freqs"_a, "bws"_a, "weight_mod"_a = 1.0, "bw_scale"_a = 1.0,
                "Add acoustic resonance suppression constraints")
 
         // add_TV
@@ -471,6 +471,33 @@ Parameters
 ----------
 tv_lam : float, optional
     Regularization strength (must be > 0 to have effect).
+weight_mod : float, optional
+    Weighting factor.)doc"
+        )
+        // add_TV_Freq
+        .def("add_TV_Freq", &Gropt::GroptParams::add_TV_Freq,
+            "tv_lam"_a = 0.0, "weight_mod"_a = 1.0, "n_pad"_a = 0,
+R"doc(Add frequency-domain total variation (or L2) regularization.
+
+Parameters
+----------
+tv_lam : float, optional
+    Regularization strength for L1 thresholding.
+weight_mod : float, optional
+    Weighting factor.
+n_pad : int, optional
+    Padding size for FFT (0 for auto).)doc"
+        )
+
+        // add_TV2
+        .def("add_TV2", &Gropt::GroptParams::add_TV2,
+            "tv2_lam"_a = 0.0, "weight_mod"_a = 1.0,
+R"doc(Add second-order total variation (TV) regularization to smooth the slew rate.
+
+Parameters
+----------
+tv2_lam : float, optional
+    Regularization strength (soft threshold) applied to the second derivative.
 weight_mod : float, optional
     Weighting factor.)doc"
         )

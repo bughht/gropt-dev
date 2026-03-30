@@ -5,7 +5,7 @@ import torch
 
 from .problem_data import ProblemData
 from ..operators.base import Operator
-from ..operators import Op_Gmax, Op_Smax, Op_Moment, Op_BValue, Op_Acoustic, Op_TV, Op_TV_Freq, Op_Identity
+from ..operators import Op_Gmax, Op_Smax, Op_Moment, Op_BValue, Op_Acoustic, Op_TV, Op_TV_Freq, Op_TV2, Op_Identity
 
 
 @dataclass
@@ -170,19 +170,23 @@ class GroptParams:
             )
         )
 
-    def add_acoustic(self, freqs, bws, weight_mod: float = 1.0, transition_hz: float = 0.0, n_pad: int = 0):
+def add_acoustic(self, freqs, bws, weight_mod: float = 1.0, bw_scale: float = 1.0, n_pad: int = 0):        
         self.op_prep_status = -1
         self.all_op.append(
-            Op_Acoustic(freqs=freqs, bws=bws, weight_mod=weight_mod, transition_hz=transition_hz, n_pad=n_pad)
+            Op_Acoustic(freqs=freqs, bws=bws, weight_mod=weight_mod, bw_scale=bw_scale, n_pad=n_pad)      
         )
 
     def add_TV(self, tv_lam: float = 0.0, weight_mod: float = 1.0):
         self.op_prep_status = -1
         self.all_op.append(Op_TV(tv_lam=tv_lam, weight_mod=weight_mod))
 
-    def add_TV_freq(self, tv_lam: float = 0.0, weight_mod: float = 1.0, n_pad: int = 0):
+    def add_TV_Freq(self, tv_lam: float = 0.0, weight_mod: float = 1.0, n_pad: int = 0):
         self.op_prep_status = -1
         self.all_op.append(Op_TV_Freq(tv_lam=tv_lam, weight_mod=weight_mod, n_pad=n_pad))
+
+    def add_TV2(self, tv2_lam: float = 0.0, weight_mod: float = 1.0):
+        self.op_prep_status = -1
+        self.all_op.append(Op_TV2(tv2_lam=tv2_lam, weight_mod=weight_mod))
 
     def add_obj_identity(self, weight_mod: float = 1.0):
         self.op_prep_status = -1

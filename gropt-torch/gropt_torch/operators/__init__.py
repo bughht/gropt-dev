@@ -5,6 +5,7 @@ from .bvalue import Op_BValue
 from .acoustic import Op_Acoustic
 from .tv import Op_TV
 from .tv_freq import Op_TV_Freq
+from .tv2 import Op_TV2
 from .identity import Op_Identity
 
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     "Op_Acoustic",
     "Op_TV",
     "Op_TV_Freq",
+    "Op_TV2",
     "Op_Identity",
 ]

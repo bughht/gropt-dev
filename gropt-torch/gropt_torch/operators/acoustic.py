@@ -6,11 +6,11 @@ from .base import Operator
 
 class Op_Acoustic(Operator):
     def __init__(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0,
-                 transition_hz: float = 0.0, n_pad: int = 0):
+                 bw_scale: float = 1.0, n_pad: int = 0):
         super().__init__(name="Acoustic", weight_mod=weight_mod)
         self.freqs = [float(f) for f in freqs]
         self.bws = [float(b) for b in bws]
-        self.transition_hz = max(0.0, float(transition_hz))
+        self.bw_scale = max(0.001, float(bw_scale))
 
         self.N_pad = int(n_pad)
         self.H = torch.tensor([])
@@ -38,17 +38,18 @@ class Op_Acoustic(Operator):
             h_val = 0.0
             for freq, bw in zip(self.freqs, self.bws):
                 dist = abs(f - freq)
-                half_bw = bw / 2.0
-                if dist <= half_bw:
-                    h_val = 1.0
-                    break
-                if self.transition_hz > 0.0 and dist <= half_bw + self.transition_hz:
-                    t = (dist - half_bw) / self.transition_hz
-                    taper = 0.5 * (1.0 + math.cos(math.pi * t))
-                    if taper > h_val:
-                        h_val = taper
+                bw_safe = max(bw, 1e-6)
+                
+                # Assume the target bandwidth represents the Full Width at Half Maximum (FWHM)
+                # Scale the FWHM linearly by bw_scale
+                scaled_fwhm = bw_safe * self.bw_scale
+                sigma = scaled_fwhm / (2.0 * math.sqrt(2.0 * math.log(2.0)))
+                h_curr = math.exp(-0.5 * (dist * dist) / (sigma * sigma))
+                
+                if h_curr > h_val:
+                    h_val = h_curr
             H[k] = h_val
-
+            
         self.H = H
 
         self.spec_norm = 1.0

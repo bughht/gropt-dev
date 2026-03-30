@@ -5,17 +5,17 @@
 namespace Gropt {
 
 Op_Acoustic::Op_Acoustic(const ProblemData &_pdata, std::vector<double> _freqs, std::vector<double> _bws, double _weight_mod,
-                         double _transition_hz)
+                         double _bw_scale)
     : Operator(_pdata) {
     name = "Acoustic";
     freqs = _freqs;
     bws = _bws;
     weight_mod = _weight_mod;
-    transition_hz = std::max(0.0, _transition_hz);
+    bw_scale = std::max(0.001, _bw_scale);
 }
 
 Op_Acoustic::Op_Acoustic(const Op_Acoustic& other)
-    : Operator(other), freqs(other.freqs), bws(other.bws), transition_hz(other.transition_hz), H(other.H),
+    : Operator(other), freqs(other.freqs), bws(other.bws), bw_scale(other.bw_scale), H(other.H),
       N_pad(other.N_pad) {
     if (other.ffth) {
         ffth = std::make_unique<FFT_Helper>(other.N_pad);
@@ -28,7 +28,6 @@ void Op_Acoustic::init() {
     H.setZero(N_pad);
     double df = 1.0 / (N_pad * pdata->dt);
     
-    constexpr double kPi = 3.14159265358979323846;
     for (int k = 0; k < N_pad; k++) {
         double f = k * df;
         if (k > N_pad / 2) {
@@ -38,17 +37,16 @@ void Op_Acoustic::init() {
         double h_val = 0.0;
         for (size_t i = 0; i < freqs.size(); i++) {
             double dist = std::abs(f - freqs[i]);
-            double half_bw = bws[i] / 2.0;
-            if (dist <= half_bw) {
-                h_val = 1.0;
-                break;
-            }
-            if (transition_hz > 0.0 && dist <= half_bw + transition_hz) {
-                double t = (dist - half_bw) / transition_hz;
-                double taper = 0.5 * (1.0 + std::cos(kPi * t));
-                if (taper > h_val) {
-                    h_val = taper;
-                }
+            double bw = std::max(bws[i], 1e-6); // safeguard against zero division
+            
+            // Assume the target bandwidth represents the Full Width at Half Maximum (FWHM)
+            // Scale the FWHM linearly by bw_scale
+            double scaled_fwhm = bw * bw_scale;
+            double sigma = scaled_fwhm / (2.0 * std::sqrt(2.0 * std::log(2.0)));
+            double h_curr = std::exp(-0.5 * (dist * dist) / (sigma * sigma));
+            
+            if (h_curr > h_val) {
+                h_val = h_curr;
             }
         }
         H(k) = h_val;

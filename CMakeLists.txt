@@ -35,6 +35,8 @@ set(GROPT_SOURCES
     ${GROPT_SRC_DIR}/operators/op_safe.cpp
     ${GROPT_SRC_DIR}/operators/op_eddy.cpp
     ${GROPT_SRC_DIR}/operators/op_tv.cpp
+    ${GROPT_SRC_DIR}/operators/op_tv_freq.cpp
+    ${GROPT_SRC_DIR}/operators/op_tv2.cpp
     ${GROPT_SRC_DIR}/solvers/solver.cpp
     ${GROPT_SRC_DIR}/solvers/solver_groptsdmm.cpp
     ${GROPT_SRC_DIR}/solvers/solver_osqp.cpp

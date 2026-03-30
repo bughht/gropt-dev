@@ -8,7 +8,7 @@ import numpy
 from numpy.typing import NDArray
 
 
-__build_date__: str = 'Mar 29 2026 22:24:54'
+__build_date__: str = 'Mar 30 2026 16:15:03'
 
 def set_log_level(level: int) -> None:
     """
@@ -374,7 +374,7 @@ class GroptParams:
             Scale factor when mode=3.
         """
 
-    def add_acoustic(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0, transition_hz: float = 0.0) -> None:
+    def add_acoustic(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0, bw_scale: float = 1.0) -> None:
         """Add acoustic resonance suppression constraints"""
 
     def add_TV(self, tv_lam: float = 0.0, weight_mod: float = 1.0) -> None:
@@ -385,6 +385,32 @@ class GroptParams:
         ----------
         tv_lam : float, optional
             Regularization strength (must be > 0 to have effect).
+        weight_mod : float, optional
+            Weighting factor.
+        """
+
+    def add_TV_Freq(self, tv_lam: float = 0.0, weight_mod: float = 1.0, n_pad: int = 0) -> None:
+        """
+        Add frequency-domain total variation (or L2) regularization.
+
+        Parameters
+        ----------
+        tv_lam : float, optional
+            Regularization strength for L1 thresholding.
+        weight_mod : float, optional
+            Weighting factor.
+        n_pad : int, optional
+            Padding size for FFT (0 for auto).
+        """
+
+    def add_TV2(self, tv2_lam: float = 0.0, weight_mod: float = 1.0) -> None:
+        """
+        Add second-order total variation (TV) regularization to smooth the slew rate.
+
+        Parameters
+        ----------
+        tv2_lam : float, optional
+            Regularization strength (soft threshold) applied to the second derivative.
         weight_mod : float, optional
             Weighting factor.
         """
