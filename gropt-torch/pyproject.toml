@@ -1,0 +1,13 @@
+[project]
+name = "gropt-torch"
+version = "0.1.0"
+description = "PyTorch-based gradient optimization for MRI (GPU + autograd)"
+requires-python = ">=3.10"
+dependencies = ["torch", "numpy", "scipy"]
+
+[project.optional-dependencies]
+examples = ["matplotlib", "seaborn"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
