@@ -8,7 +8,7 @@ import numpy
 from numpy.typing import NDArray
 
 
-__build_date__: str = 'Mar 29 2026 18:21:17'
+__build_date__: str = 'Mar 29 2026 22:24:54'
 
 def set_log_level(level: int) -> None:
     """
@@ -374,7 +374,7 @@ class GroptParams:
             Scale factor when mode=3.
         """
 
-    def add_acoustic(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0) -> None:
+    def add_acoustic(self, freqs: Sequence[float], bws: Sequence[float], weight_mod: float = 1.0, transition_hz: float = 0.0) -> None:
         """Add acoustic resonance suppression constraints"""
 
     def add_TV(self, tv_lam: float = 0.0, weight_mod: float = 1.0) -> None:

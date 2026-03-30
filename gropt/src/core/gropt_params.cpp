@@ -481,7 +481,8 @@ Eigen::VectorXd linear_interpolate(const Eigen::VectorXd &in, int out_size) {
 
 #include "op_acoustic.hpp"
 
-void Gropt::GroptParams::add_acoustic(const std::vector<double> &freqs, const std::vector<double> &bws, double weight_mod) {
+void Gropt::GroptParams::add_acoustic(const std::vector<double> &freqs, const std::vector<double> &bws, double weight_mod,
+                                      double transition_hz) {
     op_prep_status = -1;
-    all_op.push_back(std::make_unique<Op_Acoustic>(pdata, freqs, bws, weight_mod));
+    all_op.push_back(std::make_unique<Op_Acoustic>(pdata, freqs, bws, weight_mod, transition_hz));
 }

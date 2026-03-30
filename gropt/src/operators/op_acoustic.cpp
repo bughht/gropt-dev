@@ -1,16 +1,22 @@
 #include "op_acoustic.hpp"
+#include <cmath>
 #include "spdlog/spdlog.h"
 
 namespace Gropt {
 
-Op_Acoustic::Op_Acoustic(const ProblemData &_pdata, std::vector<double> _freqs, std::vector<double> _bws, double _weight_mod) : Operator(_pdata) {
+Op_Acoustic::Op_Acoustic(const ProblemData &_pdata, std::vector<double> _freqs, std::vector<double> _bws, double _weight_mod,
+                         double _transition_hz)
+    : Operator(_pdata) {
     name = "Acoustic";
     freqs = _freqs;
     bws = _bws;
     weight_mod = _weight_mod;
+    transition_hz = std::max(0.0, _transition_hz);
 }
 
-Op_Acoustic::Op_Acoustic(const Op_Acoustic& other) : Operator(other), freqs(other.freqs), bws(other.bws), H(other.H), N_pad(other.N_pad) {
+Op_Acoustic::Op_Acoustic(const Op_Acoustic& other)
+    : Operator(other), freqs(other.freqs), bws(other.bws), transition_hz(other.transition_hz), H(other.H),
+      N_pad(other.N_pad) {
     if (other.ffth) {
         ffth = std::make_unique<FFT_Helper>(other.N_pad);
     }
@@ -22,22 +28,30 @@ void Op_Acoustic::init() {
     H.setZero(N_pad);
     double df = 1.0 / (N_pad * pdata->dt);
     
+    constexpr double kPi = 3.14159265358979323846;
     for (int k = 0; k < N_pad; k++) {
         double f = k * df;
         if (k > N_pad / 2) {
             f = (N_pad - k) * df;
         }
-        
-        bool forbidden = false;
+
+        double h_val = 0.0;
         for (size_t i = 0; i < freqs.size(); i++) {
-            if (std::abs(f - freqs[i]) <= bws[i] / 2.0) {
-                forbidden = true;
+            double dist = std::abs(f - freqs[i]);
+            double half_bw = bws[i] / 2.0;
+            if (dist <= half_bw) {
+                h_val = 1.0;
                 break;
             }
+            if (transition_hz > 0.0 && dist <= half_bw + transition_hz) {
+                double t = (dist - half_bw) / transition_hz;
+                double taper = 0.5 * (1.0 + std::cos(kPi * t));
+                if (taper > h_val) {
+                    h_val = taper;
+                }
+            }
         }
-        if (forbidden) {
-            H(k) = 1.0;
-        }
+        H(k) = h_val;
     }
     
     ffth = std::make_unique<FFT_Helper>(N_pad);

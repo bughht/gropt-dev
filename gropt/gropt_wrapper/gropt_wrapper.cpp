@@ -458,9 +458,9 @@ max_scale : float, optional
         )
 
         // add_acoustic
-        .def("add_acoustic", &Gropt::GroptParams::add_acoustic,
-             "freqs"_a, "bws"_a, "weight_mod"_a = 1.0,
-             "Add acoustic resonance suppression constraints")
+           .def("add_acoustic", &Gropt::GroptParams::add_acoustic,
+               "freqs"_a, "bws"_a, "weight_mod"_a = 1.0, "transition_hz"_a = 0.0,
+               "Add acoustic resonance suppression constraints")
 
         // add_TV
         .def("add_TV", &Gropt::GroptParams::add_TV,

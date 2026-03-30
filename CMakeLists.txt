@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(gropt_python LANGUAGES CXX)
 if(MSVC)
-  add_compile_options(/utf-8)
+  add_compile_options(/utf-8 /MP)
 endif()
 
 find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
@@ -44,6 +44,12 @@ set(GROPT_SOURCES
 )
 
 add_library(gropt_core STATIC ${GROPT_SOURCES})
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(gropt_core PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 set_target_properties(gropt_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(gropt_core PUBLIC
     ${GROPT_SRC_DIR}
