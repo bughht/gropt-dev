@@ -23,11 +23,20 @@ Op_Acoustic::Op_Acoustic(const Op_Acoustic& other)
 }
 
 void Op_Acoustic::init() {
-    Ax_size = pdata->Naxis * N_pad;
+    // Dynamic padding size to dramatically speed up OSQP
+    // Needs to be large enough for linear convolution without circular wrapping (+ some padding for high res representation)
+    int n2 = pdata->N * 4;
+    N_pad = 1024;
+    while(N_pad < n2) N_pad *= 2;
+    if (N_pad > 32768) N_pad = 32768;
     
+    spdlog::trace("Op_Acoustic initialized with N_pad = {}", N_pad);
+
+    Ax_size = pdata->Naxis * N_pad;
+
     H.setZero(N_pad);
     double df = 1.0 / (N_pad * pdata->dt);
-    
+
     for (int k = 0; k < N_pad; k++) {
         double f = k * df;
         if (k > N_pad / 2) {
@@ -38,25 +47,25 @@ void Op_Acoustic::init() {
         for (size_t i = 0; i < freqs.size(); i++) {
             double dist = std::abs(f - freqs[i]);
             double bw = std::max(bws[i], 1e-6); // safeguard against zero division
-            
+
             // Assume the target bandwidth represents the Full Width at Half Maximum (FWHM)
             // Scale the FWHM linearly by bw_scale
             double scaled_fwhm = bw * bw_scale;
             double sigma = scaled_fwhm / (2.0 * std::sqrt(2.0 * std::log(2.0)));
             double h_curr = std::exp(-0.5 * (dist * dist) / (sigma * sigma));
-            
+
             if (h_curr > h_val) {
                 h_val = h_curr;
             }
         }
         H(k) = h_val;
     }
-    
+
     ffth = std::make_unique<FFT_Helper>(N_pad);
-    
+
     spec_norm = 1.0;
     spec_norm2 = 1.0;
-    
+
     if (do_init_weights) {
         obj_weight = 1e4; // Similar to b-value/slew constraints
         obj_weight *= weight_mod;
